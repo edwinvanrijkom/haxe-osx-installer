@@ -1,0 +1,22 @@
+ #!/bin/sh
+
+ROOT=root/usr/local
+LOCBIN=$ROOT/bin
+BIN=root/usr/bin
+LIB=$ROOT/lib/haxe/std
+DOC=$ROOT/lib/haxe/doc
+SRC=../haxe
+
+rm -R $ROOT
+sudo rm -R haxe.pkg
+mkdir -p $LOCBIN
+mkdir -p $BIN
+mkdir -p $LIB
+mkdir -p $DOC
+
+cp $SRC/bin/haxe $LOCBIN/haxe
+cp -R $SRC/haxe/std $LIB/..
+cp -R $SRC/haxe/doc/*.txt $DOC
+cp haxe_shell_link $BIN/haxe
+
+sudo /Developer/Tools/packagemaker -build -proj haxe.pmproj -p haxe.pkg -v 

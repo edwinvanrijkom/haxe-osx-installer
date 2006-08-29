@@ -15,8 +15,12 @@ mkdir -p $LIB
 mkdir -p $DOC
 
 cp $SRC/bin/haxe $LOCBIN/haxe
+cp $SRC/bin/haxelib $LOCBIN/haxelib
+cp $SRC/bin/haxedoc $LOCBIN/haxedoc
 cp -R $SRC/haxe/std $LIB/..
 cp -R $SRC/haxe/doc/*.txt $DOC
 cp haxe_shell_link $BIN/haxe
+cp haxelib_shell_link $BIN/haxelib
+cp haxedoc_shell_link $BIN/haxedoc
 
 sudo /Developer/Tools/packagemaker -build -proj haxe.pmproj -p haxe.pkg -v 

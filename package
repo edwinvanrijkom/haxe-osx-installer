@@ -7,6 +7,8 @@ LIB=$ROOT/lib/haxe/std
 DOC=$ROOT/lib/haxe/doc
 SRC=../haxe
 
+sudo lipo -create -arch ppc "$SRC/bin/haxe_ppc" -arch i386 "$SRC/bin/haxe_i386" -output "$SRC/bin/haxe"
+
 rm -R $ROOT
 sudo rm -R haxe.pkg
 mkdir -p $LOCBIN

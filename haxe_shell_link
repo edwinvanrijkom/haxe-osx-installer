@@ -1,3 +1,0 @@
-#!/bin/sh
-export HAXE_LIBRARY_PATH=/usr/local/lib/haxe/std:./
-/usr/local/bin/haxe "$@"

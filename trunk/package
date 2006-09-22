@@ -1,4 +1,4 @@
- #!/bin/sh
+#!/bin/sh
 
 ROOT=root/usr/local
 LOCBIN=$ROOT/bin
@@ -7,22 +7,60 @@ LIB=$ROOT/lib/haxe/std
 DOC=$ROOT/lib/haxe/doc
 SRC=../haxe
 
-sudo lipo -create -arch ppc "$SRC/bin/haxe_ppc" -arch i386 "$SRC/bin/haxe_i386" -output "$SRC/bin/haxe"
+function checkForError() {
+    if [ $? != 0 ]; then
+        echo "-- Error on $1"
+        exit $?
+    else
+        echo "++ Success on $1"    
+    fi    
+}
 
-rm -R $ROOT
-sudo rm -R haxe.pkg
+$SRC/bin/haxe $SRC/haxe/std/tools/haxelib/haxelib.hxml
+checkForError "building haxelib"
+
+$SRC/bin/haxe $SRC/haxe/std/tools/haxedoc/haxedoc.hxml
+checkForError "building haxedoc"
+
+echo "building universal haxe version"
+lipo -create -arch ppc "$SRC/bin/haxe_ppc" -arch i386 "$SRC/bin/haxe" -output "$SRC/bin/haxe_uni"
+checkForError "creating universal haxe file"
+
+echo "cleaning up"
+if [ -d root ]; then    
+    rm -R root
+    checkForError "removing previous root folder"
+fi
+if [ -d haxe.pkg ]; then
+    sudo rm -R haxe.pkg
+    checkForError "removing previous installer package"
+fi
+    
 mkdir -p $LOCBIN
 mkdir -p $BIN
 mkdir -p $LIB
 mkdir -p $DOC
 
-cp $SRC/bin/haxe $LOCBIN/haxe
-cp $SRC/bin/haxelib $LOCBIN/haxelib
-cp $SRC/bin/haxedoc $LOCBIN/haxedoc
+cp $SRC/bin/haxe_uni $LOCBIN/haxe
+checkForError "copying haxe"
+cp $SRC/haxe/std/tools/haxelib/haxelib $LOCBIN/haxelib
+checkForError "copying haxelib"
+cp $SRC/haxe/std/tools/haxedoc/haxedoc $LOCBIN/haxedoc
+checkForError "copying haxedoc"
+
 cp -R $SRC/haxe/std $LIB/..
 cp -R $SRC/haxe/doc/*.txt $DOC
-cp haxe_shell_link $BIN/haxe
-cp haxelib_shell_link $BIN/haxelib
-cp haxedoc_shell_link $BIN/haxedoc
+
+ISF="root/Install_resources"
+mkdir $ISF
+checkForError "creating $ISF folder"
+cp postflight $ISF/
+checkForError "copying postflight script"
+
+sudo chown -R root:admin root
+checkForError "setting owner on root"
+sudo chmod -R o=rx,g=rwx,u=rxw root
+checkForError "setting rights on root"
 
 sudo /Developer/Tools/packagemaker -build -proj haxe.pmproj -p haxe.pkg -v 
+checkForError "building package"

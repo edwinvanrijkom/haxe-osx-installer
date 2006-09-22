@@ -1,0 +1,24 @@
+#!/bin/sh
+echo "Placing symbolic links to Neko binaries:"
+echo ""
+
+files[0]="haxe"
+files[1]="haxedoc"
+files[2]="haxelib"
+FILECOUNT=3
+
+while [ $FILECOUNT -gt 0 ]
+do
+    FILECOUNT=$((FILECOUNT-1))
+    LNK="/usr/bin/${files[FILECOUNT]}"
+    SRC="/usr/local/bin/${files[FILECOUNT]}"
+    if [ -f "$LNK" ]; then
+        echo "removing existing link at '$LNK'"
+        sudo rm $LNK
+    fi
+    echo "linking '$SRC' from '$LNK'"
+    sudo ln -s $SRC $LNK
+done
+
+echo ""
+echo "done"
